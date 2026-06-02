@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetOps Command - Network Topology Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "on-background": "#e1e2eb",
+                        "outline-variant": "#424754",
+                        "surface-variant": "#32353c",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#68000a",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-primary": "#002e6a",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-low": "#191c22",
+                        "surface-container": "#1d2026",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "surface-dim": "#10131a",
+                        "tertiary": "#ffb3ad",
+                        "secondary": "#4edea3",
+                        "on-secondary-container": "#00311f",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-container": "#00285d",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container-high": "#272a31",
+                        "on-surface": "#e1e2eb",
+                        "primary": "#adc6ff",
+                        "inverse-surface": "#e1e2eb",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-on-surface": "#2e3037",
+                        "error": "#ffb4ab",
+                        "background": "#10131a",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-secondary": "#003824",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-container": "#ff5451",
+                        "on-tertiary-fixed": "#410004",
+                        "surface": "#10131a",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "surface-bright": "#363940",
+                        "surface-container-highest": "#32353c",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "component-gap-normal": "16px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "component-gap-dense": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "title-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .node-pulse-critical {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .topology-grid {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #424754; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-hidden">
+<div class="flex h-screen overflow-hidden">
+<!-- Predicted SideNavBar -->
+<aside class="flex flex-col h-full sticky top-0 left-0 h-screen w-64 border-r border-outline-variant/10 backdrop-blur-xl bg-opacity-70 shadow-sm z-50 bg-surface-container/70 dark:bg-surface-container/70">
+<div class="p-6">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">ISP NOC</h1>
+<p class="text-xs text-on-surface-variant/70 tracking-wider">Infrastructure Engine</p>
+</div>
+<nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+<!-- Navigation Items -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container/20 text-secondary font-bold border-r-2 border-secondary hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-body-md text-body-md">Network Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">router</span>
+<span class="font-body-md text-body-md">Devices</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">settings_ethernet</span>
+<span class="font-body-md text-body-md">PPPoE Sessions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">cell_tower</span>
+<span class="font-body-md text-body-md">Towers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">settings_input_composite</span>
+<span class="font-body-md text-body-md">Fiber Network</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-body-md text-body-md">OLT Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="font-body-md text-body-md">Outages</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="font-body-md text-body-md">Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-body-md text-body-md">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant/70 hover:text-on-surface hover:bg-white/5 transition-colors duration-200 rounded" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="NOC Operator Profile" data-alt="A professional headshot of a network operations specialist, with a serious yet focused expression, set against a blurred background of glowing server racks and digital monitors. The lighting is low-key and moody, emphasizing a high-tech dark mode aesthetic with blue and teal highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW8zBJ7X9SqinDn6rttVKO3nF8xwfsfrUjEgJbjQWrwIfRcWhq2q4Hd-W2UcOFV_4iF4bjhnp5ViTpwR3CoI-Cpy45DImWqvr83IiJOcj2ujGF8gRKKrzQdaDQ4g3GCZjstF2bVx4jhnbTd0lFDVbkDw8sVz8Fbm09kR19Ejx18XAt_wfC0sn5MC588v-zUCjN9fr4l69IHhtuhA4XIhW3_MIzEm-bZ9e2KaXax3-pYWb1Lz7C6V834HpcEAIZ948oouxMV6joxX4"/>
+</div>
+<div>
+<p class="font-body-md text-sm font-bold">Admin-01</p>
+<p class="text-xs text-on-surface-variant/60">Shift Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0 h-full relative">
+<!-- Predicted TopNavBar -->
+<header class="flex justify-between items-center px-gutter w-full h-16 sticky top-0 z-50 backdrop-blur-md border-b border-white/10 bg-surface-dim/80 dark:bg-surface-dim/80 shadow-md">
+<div class="flex items-center gap-6 flex-1">
+<div class="font-headline-md text-headline-md font-black tracking-tight text-on-surface uppercase">NetOps Command</div>
+<div class="relative max-w-md w-full ml-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Search nodes, IPs, or customers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="text-secondary font-label-caps text-label-caps">Network Health: 98.4%</span>
+<span class="text-error font-label-caps text-label-caps">12 Critical Alerts</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-full cursor-pointer">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Map Canvas -->
+<main class="flex-1 relative overflow-hidden topology-grid bg-surface-lowest">
+<!-- SVG Connections Layer -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40">
+<!-- Core to Aggregation -->
+<line stroke="#adc6ff" stroke-width="2" x1="100" x2="300" y1="400" y2="400"></line>
+<line stroke="#4edea3" stroke-width="1.5" x1="300" x2="550" y1="400" y2="200"></line>
+<line stroke="#4edea3" stroke-width="1.5" x1="300" x2="550" y1="400" y2="600"></line>
+<!-- Aggregation to POPs -->
+<path d="M 550 200 L 800 100" stroke="#4edea3" stroke-width="1"></path>
+<path d="M 550 200 L 800 300" stroke="#ffb4ab" stroke-dasharray="4" stroke-width="1.5"></path>
+</svg>
+<!-- Draggable Nodes (Simulated Positions) -->
+<div class="absolute inset-0 p-12 overflow-auto" id="map-container">
+<div class="relative w-[1600px] h-[1000px]">
+<!-- Core Tier -->
+<div class="absolute top-[350px] left-[50px] group cursor-pointer" onclick="selectNode('Core-X1', 'Core Router', 'Online', '10.0.0.1')">
+<div class="glass-panel p-4 rounded-xl flex flex-col items-center gap-2 w-40 hover:scale-105 transition-transform border-primary-fixed-dim/30">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined text-3xl">router</span>
+</div>
+<span class="font-title-sm text-title-sm">Core-X1</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.6)]"></span>
+<span class="text-[10px] text-on-surface-variant font-label-caps">ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Aggregation Tier -->
+<div class="absolute top-[350px] left-[300px] group cursor-pointer" onclick="selectNode('AGG-Main-01', 'Aggregation Switch', 'Online', '10.0.1.1')">
+<div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 w-32 hover:scale-105 transition-transform">
+<div class="bg-secondary/10 p-2 rounded-lg text-secondary">
+<span class="material-symbols-outlined text-2xl">dns</span>
+</div>
+<span class="text-xs font-bold">AGG-Main-01</span>
+</div>
+</div>
+<!-- POP Tier -->
+<div class="absolute top-[150px] left-[550px] group cursor-pointer" onclick="selectNode('POP-North', 'Point of Presence', 'Degraded', '10.12.0.1')">
+<div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 w-32 hover:scale-105 transition-transform border-tertiary-container/40">
+<div class="bg-tertiary/10 p-2 rounded-lg text-tertiary">
+<span class="material-symbols-outlined text-2xl">hub</span>
+</div>
+<span class="text-xs font-bold">POP-North</span>
+<span class="text-[10px] text-tertiary">LATENCY SPIKE</span>
+</div>
+</div>
+<div class="absolute top-[550px] left-[550px] group cursor-pointer" onclick="selectNode('POP-South', 'Point of Presence', 'Critical', '10.14.0.1')">
+<div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 w-32 hover:scale-105 transition-transform border-error/50 node-pulse-critical">
+<div class="bg-error/10 p-2 rounded-lg text-error">
+<span class="material-symbols-outlined text-2xl">priority_high</span>
+</div>
+<span class="text-xs font-bold">POP-South</span>
+<span class="text-[10px] text-error font-bold uppercase">Down</span>
+</div>
+</div>
+<!-- Tower Tier -->
+<div class="absolute top-[50px] left-[850px] group cursor-pointer" onclick="selectNode('Tower-Echo-12', 'Radio Tower', 'Online', '172.16.1.1')">
+<div class="glass-panel p-3 rounded-xl flex flex-col items-center gap-2 w-28 hover:scale-105 transition-transform">
+<div class="bg-on-surface-variant/10 p-2 rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined text-2xl">cell_tower</span>
+</div>
+<span class="text-xs font-bold">Tower-E12</span>
+</div>
+</div>
+<!-- Customer Cloud -->
+<div class="absolute top-[400px] left-[1150px] group cursor-pointer" onclick="selectNode('CUST-VLAN-88', 'Customer Segment', 'Online', 'Multiple')">
+<div class="glass-panel p-4 rounded-xl flex flex-col items-center gap-2 w-48 hover:scale-105 transition-transform">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-dim bg-primary-container flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-dim bg-secondary-container flex items-center justify-center text-[10px] font-bold">AM</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-dim bg-tertiary-container flex items-center justify-center text-[10px] font-bold">+2k</div>
+</div>
+<span class="text-xs font-bold">Residential Cluster B</span>
+<div class="w-full bg-white/5 h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-secondary h-full w-[94%]"></div>
+</div>
+<span class="text-[10px] text-on-surface-variant">94% Satisfied</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Zoom/Pan Controls -->
+<div class="absolute bottom-8 left-8 flex flex-col gap-2 z-40">
+<div class="glass-panel flex flex-col rounded-lg overflow-hidden border-white/5 shadow-2xl">
+<button class="p-3 hover:bg-white/10 transition-colors border-b border-white/5">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="p-3 hover:bg-white/10 transition-colors border-b border-white/5">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="p-3 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">near_me</span>
+</button>
+</div>
+<div class="glass-panel rounded-lg p-3 border-white/5 flex flex-col items-center">
+<span class="text-[10px] font-bold font-data-mono text-on-surface-variant">100%</span>
+</div>
+</div>
+<!-- Map Legend -->
+<div class="absolute top-8 left-8 glass-panel rounded-xl p-4 border-white/5 z-40 flex flex-col gap-3 min-w-[200px]">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Network Topology</span>
+<span class="material-symbols-outlined text-sm opacity-50">layers</span>
+</div>
+<div class="space-y-2 pt-2">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-secondary glow-secondary"></span>
+<span class="text-xs text-on-surface">Stable Node</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs text-on-surface">Warning (Jitter)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-error node-pulse-critical"></span>
+<span class="text-xs text-on-surface">Critical Outage</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="text-xs text-on-surface">Unmanaged / Passive</span>
+</div>
+</div>
+</div>
+<!-- Selected Node Sidebar Overlay (Right) -->
+<div class="absolute right-0 top-0 bottom-0 w-80 translate-x-full transition-transform duration-300 ease-in-out glass-panel z-50 border-l border-white/10 flex flex-col" id="details-sidebar">
+<div class="p-6 border-b border-white/5 flex justify-between items-center">
+<h2 class="font-title-sm text-title-sm">Node Details</h2>
+<button class="p-1 hover:bg-white/10 rounded" onclick="closeDetails()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center text-secondary" id="detail-icon">
+<span class="material-symbols-outlined text-2xl">hub</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md leading-none mb-1" id="detail-name">POP-North</p>
+<p class="text-xs text-on-surface-variant" id="detail-type">Point of Presence</p>
+</div>
+</div>
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold uppercase tracking-wider" id="detail-status-pill">
+                                Degraded Performance
+                            </div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-xs text-on-surface-variant">Management IP</span>
+<span class="text-xs font-data-mono" id="detail-ip">10.12.0.1</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-xs text-on-surface-variant">Uptime</span>
+<span class="text-xs font-data-mono">245d 14h 22m</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-xs text-on-surface-variant">Traffic (In/Out)</span>
+<span class="text-xs font-data-mono">4.2 Gbps / 1.1 Gbps</span>
+</div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Telemetry</p>
+<div class="h-24 w-full bg-surface-container-low rounded-lg p-2 overflow-hidden relative">
+<svg class="w-full h-full" viewbox="0 0 100 40">
+<path class="opacity-80" d="M0 40 Q 25 35, 50 10 T 100 20" fill="none" stroke="#4edea3" stroke-width="2"></path>
+<path d="M0 40 Q 25 35, 50 10 T 100 20 V 40 H 0 Z" fill="url(#sparkline-grad)" opacity="0.1"></path>
+<defs>
+<lineargradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4edea3"></stop>
+<stop offset="100%" stop-color="transparent"></stop>
+</lineargradient>
+</defs>
+</svg>
+<span class="absolute top-2 right-2 text-[10px] font-data-mono text-secondary">98ms</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-primary text-on-primary py-3 rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span> SSH
+                            </button>
+<button class="bg-surface-container-highest py-3 rounded-lg text-xs font-bold hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">tune</span> Config
+                            </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<script>
+        function selectNode(name, type, status, ip) {
+            const sidebar = document.getElementById('details-sidebar');
+            const nameEl = document.getElementById('detail-name');
+            const typeEl = document.getElementById('detail-type');
+            const ipEl = document.getElementById('detail-ip');
+            const statusPill = document.getElementById('detail-status-pill');
+            const iconContainer = document.getElementById('detail-icon');
+
+            nameEl.innerText = name;
+            typeEl.innerText = type;
+            ipEl.innerText = ip;
+            
+            // Set status styling
+            if(status === 'Critical' || status === 'Down') {
+                statusPill.innerText = 'Critical Failure';
+                statusPill.className = 'inline-flex items-center px-3 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase tracking-wider';
+                iconContainer.className = 'w-12 h-12 rounded-xl bg-error/20 flex items-center justify-center text-error';
+            } else if(status === 'Degraded') {
+                statusPill.innerText = 'Performance Degradation';
+                statusPill.className = 'inline-flex items-center px-3 py-1 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold uppercase tracking-wider';
+                iconContainer.className = 'w-12 h-12 rounded-xl bg-tertiary/20 flex items-center justify-center text-tertiary';
+            } else {
+                statusPill.innerText = 'System Normal';
+                statusPill.className = 'inline-flex items-center px-3 py-1 rounded-full bg-secondary/10 text-secondary text-[10px] font-bold uppercase tracking-wider';
+                iconContainer.className = 'w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center text-secondary';
+            }
+
+            sidebar.classList.remove('translate-x-full');
+        }
+
+        function closeDetails() {
+            const sidebar = document.getElementById('details-sidebar');
+            sidebar.classList.add('translate-x-full');
+        }
+
+        // Lightweight pan simulation for visual interest
+        const mapContainer = document.getElementById('map-container');
+        let isDown = false;
+        let startX;
+        let startY;
+        let scrollLeft;
+        let scrollTop;
+
+        mapContainer.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - mapContainer.offsetLeft;
+            startY = e.pageY - mapContainer.offsetTop;
+            scrollLeft = mapContainer.scrollLeft;
+            scrollTop = mapContainer.scrollTop;
+            mapContainer.style.cursor = 'grabbing';
+        });
+        mapContainer.addEventListener('mouseleave', () => {
+            isDown = false;
+            mapContainer.style.cursor = 'default';
+        });
+        mapContainer.addEventListener('mouseup', () => {
+            isDown = false;
+            mapContainer.style.cursor = 'default';
+        });
+        mapContainer.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - mapContainer.offsetLeft;
+            const y = e.pageY - mapContainer.offsetTop;
+            const walkX = (x - startX) * 1.5; 
+            const walkY = (y - startY) * 1.5;
+            mapContainer.scrollLeft = scrollLeft - walkX;
+            mapContainer.scrollTop = scrollTop - walkY;
+        });
+    </script>
+</body></html>

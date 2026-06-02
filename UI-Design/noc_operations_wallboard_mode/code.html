@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetOps Command | NOC Wallboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); opacity: 1; }
+            80%, 100% { transform: scale(1.5); opacity: 0; }
+        }
+        .pulse-critical {
+            position: relative;
+        }
+        .pulse-critical::before {
+            content: '';
+            position: absolute;
+            left: -100%; top: -100%; width: 300%; height: 300%;
+            background-color: #ff5451;
+            border-radius: 100%;
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to bottom, rgba(78, 222, 163, 0), rgba(78, 222, 163, 0.2), rgba(78, 222, 163, 0));
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "on-background": "#e1e2eb",
+                        "outline-variant": "#424754",
+                        "surface-variant": "#32353c",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#68000a",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-primary": "#002e6a",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-low": "#191c22",
+                        "surface-container": "#1d2026",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "surface-dim": "#10131a",
+                        "tertiary": "#ffb3ad",
+                        "secondary": "#4edea3",
+                        "on-secondary-container": "#00311f",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-container": "#00285d",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container-high": "#272a31",
+                        "on-surface": "#e1e2eb",
+                        "primary": "#adc6ff",
+                        "inverse-surface": "#e1e2eb",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-on-surface": "#2e3037",
+                        "error": "#ffb4ab",
+                        "background": "#10131a",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-secondary": "#003824",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-container": "#ff5451",
+                        "on-tertiary-fixed": "#410004",
+                        "surface": "#10131a",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "surface-bright": "#363940",
+                        "surface-container-highest": "#32353c",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "component-gap-normal": "16px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "component-gap-dense": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "title-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden h-screen w-screen flex flex-col">
+<!-- Top Navigation Anchor (Minimal Wallboard Chrome) -->
+<header class="flex justify-between items-center px-gutter w-full h-16 bg-surface-dim/80 backdrop-blur-md border-b border-white/10 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-black tracking-tight text-on-surface">NetOps Command</span>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.2em]">Wallboard Mode</span>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-on-surface-variant">System Time (UTC)</span>
+<span class="font-data-mono text-data-mono text-primary text-lg" id="live-clock">12:45:33</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-2 rounded-lg bg-surface-container-high border border-white/5">
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-secondary">Network Health: 98.4%</span>
+<span class="font-label-caps text-label-caps text-error-container text-tertiary">12 Critical Alerts</span>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:opacity-80">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Wallboard Grid -->
+<main class="flex-1 grid grid-cols-12 grid-rows-6 gap-component-gap-normal p-gutter relative overflow-hidden">
+<div class="scanline"></div>
+<!-- MASSIVE HEALTH INDICATOR (Large Column Area) -->
+<div class="col-span-5 row-span-3 glass-panel rounded-xl flex flex-col items-center justify-center p-8 relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] border-[40px] border-secondary/20 rounded-full"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border-[20px] border-secondary/10 rounded-full"></div>
+</div>
+<h2 class="font-label-caps text-label-caps text-on-surface-variant tracking-[0.3em] mb-4">GLOBAL NETWORK HEALTH</h2>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-[120px] leading-none font-black text-secondary drop-shadow-[0_0_20px_rgba(78,222,163,0.4)]">98.4</span>
+<span class="text-4xl font-bold text-secondary">%</span>
+</div>
+<div class="flex items-center gap-6 mt-8">
+<div class="flex flex-col items-center">
+<span class="font-data-mono text-2xl text-on-surface">24.1TB/s</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">THROUGHPUT</span>
+</div>
+<div class="w-[1px] h-10 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="font-data-mono text-2xl text-on-surface">14ms</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">AVG LATENCY</span>
+</div>
+<div class="w-[1px] h-10 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="font-data-mono text-2xl text-secondary">99.99%</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">UPTIME (24H)</span>
+</div>
+</div>
+</div>
+<!-- TOPOLOGY MESH (Large Right Area) -->
+<div class="col-span-7 row-span-4 glass-panel rounded-xl relative overflow-hidden p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">hub</span>
+                        Infrastructure Mesh Status
+                    </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time edge connectivity visualization</p>
+</div>
+<div class="flex gap-2">
+<span class="px-2 py-1 rounded bg-secondary/10 border border-secondary/20 text-[10px] font-bold text-secondary">428 NODES ACTIVE</span>
+<span class="px-2 py-1 rounded bg-tertiary-container/10 border border-tertiary-container/20 text-[10px] font-bold text-tertiary">3 DEGRADED</span>
+</div>
+</div>
+<!-- Simplified Topology Grid -->
+<div class="w-full h-[calc(100%-60px)] grid grid-cols-12 grid-rows-8 gap-4 opacity-80">
+<!-- Randomized Nodes -->
+<script>
+                    const meshContainer = document.currentScript.parentElement;
+                    const statuses = ['secondary', 'secondary', 'secondary', 'secondary', 'secondary', 'primary', 'tertiary-container'];
+                    for (let i = 0; i < 48; i++) {
+                        const status = statuses[Math.floor(Math.random() * statuses.length)];
+                        const isDegraded = status === 'tertiary-container';
+                        const node = document.createElement('div');
+                        node.className = `flex flex-col items-center justify-center gap-2 transition-all duration-1000`;
+                        node.innerHTML = `
+                            <div class="relative w-4 h-4 rounded-full bg-${status} shadow-[0_0_10px_var(--tw-shadow-color)] shadow-${status}/50 ${isDegraded ? 'pulse-critical' : ''}"></div>
+                            <span class="font-data-mono text-[8px] text-on-surface-variant">N-${1000 + i}</span>
+                        `;
+                        meshContainer.appendChild(node);
+                    }
+                </script>
+</div>
+<!-- Overlay Map Hint -->
+<img class="absolute inset-0 w-full h-full object-cover opacity-[0.03] pointer-events-none mix-blend-overlay" data-alt="A highly detailed dark-themed global fiber optic network map with glowing nodes and intricate connection lines spread across a dark blue and obsidian background, representing high-speed data transmission in a minimalist data-driven aesthetic. Lighting is cinematic and neon-inspired." data-location="Global" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt-7hLj5k0Yuh7fTHDvdmuiaSWqsXBac2vcUTKZbkFKx0pto3VLQHTP3nTdiHsPny-LW3ljEhmA_bReUk_GCUcAOd0LhN56lqdQOGMyc-yBUl24YMGLTW4sYnV4ZTH0hQx9Axs1042mNBhtB-qHMkfD0x60i5hfT6J18Pyc54Osswsn8l2CFVw8j56gdMdyXA99Mf4kVFf1fRMYQLSQa_6X_pI3Kzd184h8HGYh-r8ElAbyP7hn1EPnjGHWYleDK4mIgnCo2-V4pg"/>
+</div>
+<!-- OUTAGE COUNTER -->
+<div class="col-span-2 row-span-1 glass-panel rounded-xl flex items-center gap-6 p-6">
+<div class="w-12 h-12 rounded bg-tertiary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-3xl">report_problem</span>
+</div>
+<div>
+<span class="font-display-lg text-4xl text-on-surface block font-black">04</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Active Outages</span>
+</div>
+</div>
+<!-- CRITICAL TICKER -->
+<div class="col-span-3 row-span-1 glass-panel rounded-xl flex items-center px-6 overflow-hidden">
+<div class="flex items-center gap-4 whitespace-nowrap animate-marquee">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span class="font-data-mono text-body-sm text-on-surface uppercase">[12:44] OLT-NY-04: Line failure on Port 14</span>
+</div>
+<div class="w-8"></div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-data-mono text-body-sm text-on-surface-variant uppercase">[12:40] Backbone-SEA-01: Reroute Successful</span>
+</div>
+</div>
+<style>
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .animate-marquee {
+                    animation: marquee 20s linear infinite;
+                }
+            </style>
+</div>
+<!-- REAL-TIME EVENT FEED -->
+<div class="col-span-5 row-span-2 glass-panel rounded-xl flex flex-col p-6">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-widest">Real-Time Event Stream</h3>
+<span class="font-data-mono text-[10px] text-secondary">LIVE AUTO-REFRESH</span>
+</div>
+<div class="flex-1 space-y-2 overflow-hidden">
+<div class="flex items-start gap-4 p-2 bg-white/5 rounded border-l-2 border-secondary">
+<span class="font-data-mono text-secondary text-[10px] mt-1">12:45:01</span>
+<div class="flex-1">
+<p class="font-body-sm text-on-surface leading-tight font-bold">CUSTOMER_AUTH_SUCCESS</p>
+<p class="font-data-mono text-[10px] text-on-surface-variant">Subscriber #88412 - PPPoE Session Established</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-2 bg-white/5 rounded border-l-2 border-primary">
+<span class="font-data-mono text-primary text-[10px] mt-1">12:44:58</span>
+<div class="flex-1">
+<p class="font-body-sm text-on-surface leading-tight font-bold">ROUTING_TABLE_UPDATE</p>
+<p class="font-data-mono text-[10px] text-on-surface-variant">BGP convergence complete in Amsterdam DC</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-2 bg-tertiary-container/10 rounded border-l-2 border-tertiary">
+<span class="font-data-mono text-tertiary text-[10px] mt-1">12:44:32</span>
+<div class="flex-1">
+<p class="font-body-sm text-on-surface leading-tight font-bold">LINK_DOWN_CRITICAL</p>
+<p class="font-data-mono text-[10px] text-on-surface-variant">Tower 84: Microwave backhaul signal lost</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-2 bg-white/5 rounded border-l-2 border-secondary opacity-50">
+<span class="font-data-mono text-secondary text-[10px] mt-1">12:44:12</span>
+<div class="flex-1">
+<p class="font-body-sm text-on-surface leading-tight">OLT_HEARTBEAT_RECV</p>
+<p class="font-data-mono text-[10px] text-on-surface-variant">Zone 14: All 12 nodes reporting nominal</p>
+</div>
+</div>
+</div>
+</div>
+<!-- PERFORMANCE CHARTS (Mini Cards) -->
+<div class="col-span-3 row-span-2 glass-panel rounded-xl p-6">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase">Regional Peak Load</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-data-mono text-[10px] text-on-surface">NORTH REGION</span>
+<span class="font-data-mono text-[10px] text-secondary">82%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[82%] shadow-[0_0_8px_rgba(78,222,163,0.5)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-data-mono text-[10px] text-on-surface">SOUTH REGION</span>
+<span class="font-data-mono text-[10px] text-primary">64%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[64%] shadow-[0_0_8px_rgba(173,198,255,0.5)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="font-data-mono text-[10px] text-on-surface">WEST REGION</span>
+<span class="font-data-mono text-[10px] text-tertiary">91%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[91%] shadow-[0_0_8px_rgba(255,179,173,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-4 row-span-2 glass-panel rounded-xl p-6 flex flex-col">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase">System Resources</h3>
+<div class="flex-1 flex gap-6">
+<div class="flex-1 flex flex-col items-center justify-center relative">
+<svg class="w-24 h-24 transform -rotate-90">
+<circle class="text-surface-container-highest" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-secondary drop-shadow-[0_0_5px_rgba(78,222,163,0.5)]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="180" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-data-mono text-xl text-on-surface">28%</span>
+<span class="text-[8px] font-bold text-on-surface-variant uppercase">CPU</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center relative">
+<svg class="w-24 h-24 transform -rotate-90">
+<circle class="text-surface-container-highest" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary drop-shadow-[0_0_5px_rgba(173,198,255,0.5)]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="100" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-data-mono text-xl text-on-surface">61%</span>
+<span class="text-[8px] font-bold text-on-surface-variant uppercase">RAM</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Script for Live Interactions -->
+<script>
+        // Real-time clock update
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toISOString().substr(11, 8);
+            document.getElementById('live-clock').textContent = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Simulate event feed additions
+        const eventContainer = document.querySelector('.space-y-2.overflow-hidden');
+        const eventTypes = [
+            { label: 'DEVICE_REBOOT', desc: 'Core Router #12 initialized', color: 'primary' },
+            { label: 'SECURITY_SCAN', desc: 'Port audit completed - 0 vulnerabilities', color: 'secondary' },
+            { label: 'BACKUP_STARTED', desc: 'Config backup for Site Alpha', color: 'primary' }
+        ];
+
+        setInterval(() => {
+            const type = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+            const time = new Date().toISOString().substr(11, 8);
+            const eventHtml = `
+                <div class="flex items-start gap-4 p-2 bg-white/5 rounded border-l-2 border-${type.color} transform translate-y-4 opacity-0 transition-all duration-500 animate-in fade-in slide-in-from-bottom-2 fill-mode-forwards">
+                    <span class="font-data-mono text-${type.color} text-[10px] mt-1">${time}</span>
+                    <div class="flex-1">
+                        <p class="font-body-sm text-on-surface leading-tight font-bold">${type.label}</p>
+                        <p class="font-data-mono text-[10px] text-on-surface-variant">${type.desc}</p>
+                    </div>
+                </div>
+            `;
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = eventHtml;
+            eventContainer.prepend(wrapper.firstElementChild);
+            if (eventContainer.children.length > 6) {
+                eventContainer.lastElementChild.remove();
+            }
+        }, 8000);
+
+        // Subtle randomized flickering for aesthetic "hardware" feel
+        setInterval(() => {
+            const nodes = document.querySelectorAll('.grid-cols-12 > div > div');
+            const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+            if (randomNode) {
+                randomNode.classList.add('brightness-150');
+                setTimeout(() => randomNode.classList.remove('brightness-150'), 150);
+            }
+        }, 2000);
+    </script>
+</body></html>

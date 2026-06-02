@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Management Portal | NetOps Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#00a572",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "on-background": "#e1e2eb",
+                        "outline-variant": "#424754",
+                        "surface-variant": "#32353c",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary": "#68000a",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-primary": "#002e6a",
+                        "on-tertiary-container": "#5c0008",
+                        "surface-container-low": "#191c22",
+                        "surface-container": "#1d2026",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "surface-dim": "#10131a",
+                        "tertiary": "#ffb3ad",
+                        "secondary": "#4edea3",
+                        "on-secondary-container": "#00311f",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-container": "#00285d",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-container-high": "#272a31",
+                        "on-surface": "#e1e2eb",
+                        "primary": "#adc6ff",
+                        "inverse-surface": "#e1e2eb",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-on-surface": "#2e3037",
+                        "error": "#ffb4ab",
+                        "background": "#10131a",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-secondary": "#003824",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-container": "#ff5451",
+                        "on-tertiary-fixed": "#410004",
+                        "surface": "#10131a",
+                        "primary-container": "#4d8eff",
+                        "outline": "#8c909f",
+                        "surface-bright": "#363940",
+                        "surface-container-highest": "#32353c",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "component-gap-normal": "16px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "component-gap-dense": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "title-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .status-glow-live {
+            box-shadow: 0 0 8px #4edea3;
+        }
+        .status-glow-offline {
+            box-shadow: 0 0 8px #ffb4ab;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #10131a; }
+        ::-webkit-scrollbar-thumb { background: #32353c; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/30">
+<div class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="flex flex-col h-full sticky top-0 left-0 h-screen w-64 border-r border-outline-variant/10 backdrop-blur-xl bg-opacity-70 shadow-sm bg-surface-container/70 dark:bg-surface-container/70 shrink-0">
+<div class="p-container-padding">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">ISP NOC</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70">Infrastructure Engine</p>
+</div>
+<nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+<!-- Navigation Items -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-body-md text-body-md">Network Map</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="router">router</span>
+<span class="font-body-md text-body-md">Devices</span>
+</a>
+<!-- ACTIVE TAB: Customers -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded bg-secondary-container/20 text-secondary font-bold border-r-2 border-secondary active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-body-md text-body-md">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="settings_ethernet">settings_ethernet</span>
+<span class="font-body-md text-body-md">PPPoE Sessions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="cell_tower">cell_tower</span>
+<span class="font-body-md text-body-md">Towers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_fiber">settings_input_composite</span>
+<span class="font-body-md text-body-md">Fiber Network</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-body-md text-body-md">OLT Management</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="report_problem">report_problem</span>
+<span class="font-body-md text-body-md">Outages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-body-md text-body-md">Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-body-md text-body-md">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors duration-200 text-on-surface-variant/70 hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant/10 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover grayscale" data-alt="Professional headshot of a network operations center operator in a dark blue uniform, with a focused and serious expression, set against a background of glowing server monitors and data streams in a dark technical environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMOS6hCRnc2ppiWnmxSbGruVI2K9tUihcAfurbCGc99FAZtsL4CdPvN11FE1-G34LGOpLVbJOL026iT-jE2XwCHwk1MzqLpo7wWVNqdmxYWm8XGZX2dO8D5vIiI_-VDconH9yy1c6N8i1yLoHrBjbxAh6Fh6-dkO4B1JYVjjWakBXipJ2vTuNkRT3Bx5lYIJIR9WmVGsoNGNNbNl9TBe9-J094Ooyniwa8JeXAvlnkOYQctBaySbCWSbUGYkVARTetq2O3QYeMbC0"/>
+<div>
+<p class="font-body-sm font-bold text-on-surface">Alex Chen</p>
+<p class="text-[11px] text-on-surface-variant/60">L3 ENGINEER</p>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopNavBar Component -->
+<header class="flex justify-between items-center px-gutter w-full sticky top-0 z-50 bg-surface-dim/80 dark:bg-surface-dim/80 backdrop-blur-md border-b border-white/10 shadow-md h-16">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-black tracking-tight text-on-surface">NetOps Command</span>
+<div class="relative group hidden lg:block">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-surface-container-lowest border border-outline-variant/20 rounded-lg pl-10 pr-4 py-1.5 w-80 text-body-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Search customers, IP, or OLT..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-secondary">Network Health: 98.4%</span>
+<span class="font-label-caps text-label-caps text-error">12 Critical Alerts</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 text-on-surface-variant" data-icon="dark_mode">dark_mode</span>
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 text-on-surface-variant" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-gutter space-y-gutter overflow-y-auto">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Customer Fleet</h2>
+<p class="text-on-surface-variant">Manage subscriber profiles and real-time telemetry across fiber and wireless segments.</p>
+</div>
+<div class="flex gap-2 p-1 bg-surface-container rounded-lg border border-outline-variant/10">
+<button class="px-4 py-1.5 rounded-md text-label-caps bg-primary text-on-primary shadow-sm transition-all">All Customers</button>
+<button class="px-4 py-1.5 rounded-md text-label-caps text-on-surface-variant hover:bg-surface-container-high transition-all">Fiber (GPON)</button>
+<button class="px-4 py-1.5 rounded-md text-label-caps text-on-surface-variant hover:bg-surface-container-high transition-all">Wireless (PtMP)</button>
+</div>
+</div>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="glass-panel p-4 rounded-xl">
+<p class="text-label-caps text-on-surface-variant/60">Total Subscribers</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-display-lg">12,482</span>
+<span class="text-secondary text-body-sm font-bold">↑ 2.4%</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<p class="text-label-caps text-on-surface-variant/60">Critical Signal Alerts</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-display-lg text-error">142</span>
+<span class="text-on-surface-variant/40 text-body-sm tracking-widest">SIGNAL &lt; -75dbm</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<p class="text-label-caps text-on-surface-variant/60">Session Uptime</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-display-lg">99.98%</span>
+<span class="text-secondary text-body-sm font-bold">Avg. 18d</span>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl bg-primary/5">
+<p class="text-label-caps text-primary">Open Support Tickets</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-display-lg text-primary">34</span>
+<span class="text-on-surface-variant/60 text-body-sm">Active Queue</span>
+</div>
+</div>
+</div>
+<!-- Main Content Split -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter h-[calc(100vh-340px)]">
+<!-- Table View (8 cols) -->
+<div class="xl:col-span-8 flex flex-col glass-panel rounded-xl overflow-hidden min-h-0">
+<div class="px-4 py-3 border-b border-outline-variant/10 flex justify-between items-center">
+<span class="font-title-sm text-title-sm">Live Subscriber Feed</span>
+<div class="flex gap-2">
+<button class="p-1.5 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="filter_list">filter_list</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-low z-10">
+<tr class="border-b border-outline-variant/20">
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Subscriber / PPPoE</th>
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Plan</th>
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Status</th>
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Signal</th>
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Source Node</th>
+<th class="px-4 py-3 text-label-caps text-on-surface-variant/70">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-white/5 transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold text-[10px]">JD</div>
+<div>
+<div class="font-body-md text-on-surface font-semibold">Johnathan Doe</div>
+<div class="font-data-mono text-[10px] text-on-surface-variant/60">pppoe_jdoe_921</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-2.5">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary-fixed-dim border border-primary/20 text-[11px] font-bold">1GBPS FIBER</span>
+</td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary status-glow-live"></div>
+<span class="text-body-sm text-secondary">Live</span>
+</div>
+</td>
+<td class="px-4 py-2.5 font-data-mono text-secondary">
+                                            -18.4 dBm
+                                        </td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="settings_input_fiber">settings_input_composite</span>
+<span class="text-body-sm">OLT-CENTRAL-01</span>
+</div>
+</td>
+<td class="px-4 py-2.5 text-right">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
+</td>
+</tr>
+<!-- Row 2 (Warning) -->
+<tr class="hover:bg-white/5 transition-colors group cursor-pointer bg-error-container/5 border-l-2 border-transparent hover:border-error">
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-tertiary font-bold text-[10px]">MA</div>
+<div>
+<div class="font-body-md text-on-surface font-semibold">Maria Alvarez</div>
+<div class="font-data-mono text-[10px] text-on-surface-variant/60">wifi_alv_north_12</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-2.5">
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant border border-outline-variant/30 text-[11px] font-bold">50MBPS WIRELESS</span>
+</td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary status-glow-live"></div>
+<span class="text-body-sm text-secondary">Live</span>
+</div>
+</td>
+<td class="px-4 py-2.5 font-data-mono text-error">
+                                            -76.2 dBm
+                                        </td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="cell_tower">cell_tower</span>
+<span class="text-body-sm">TOWER-HIGHLANDS</span>
+</div>
+</td>
+<td class="px-4 py-2.5 text-right">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</td>
+</tr>
+<!-- Row 3 (Offline) -->
+<tr class="hover:bg-white/5 transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant/40 font-bold text-[10px]">ST</div>
+<div>
+<div class="font-body-md text-on-surface-variant font-semibold">Samuel Thompson</div>
+<div class="font-data-mono text-[10px] text-on-surface-variant/40">pppoe_st_8821</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-2.5">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary-fixed-dim border border-primary/20 text-[11px] font-bold">250MBPS FIBER</span>
+</td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error status-glow-offline"></div>
+<span class="text-body-sm text-error">Offline</span>
+</div>
+</td>
+<td class="px-4 py-2.5 font-data-mono text-on-surface-variant/30">
+                                            -- dBm
+                                        </td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant/40" data-icon="settings_input_fiber">settings_input_composite</span>
+<span class="text-body-sm text-on-surface-variant/40">OLT-EAST-04</span>
+</div>
+</td>
+<td class="px-4 py-2.5 text-right">
+<span class="text-[10px] text-on-surface-variant/60 font-bold">DOWN 02:41:12</span>
+</td>
+</tr>
+<!-- More rows added for scroll effect -->
+<tr class="hover:bg-white/5 transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold text-[10px]">KC</div>
+<div>
+<div class="font-body-md text-on-surface font-semibold">Karen Chen</div>
+<div class="font-data-mono text-[10px] text-on-surface-variant/60">pppoe_kchen_pro</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-2.5"><span class="px-2 py-0.5 rounded bg-primary/10 text-primary-fixed-dim border border-primary/20 text-[11px] font-bold text-nowrap">500MBPS FIBER</span></td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary status-glow-live"></div>
+<span class="text-body-sm text-secondary">Live</span>
+</div>
+</td>
+<td class="px-4 py-2.5 font-data-mono text-secondary">-21.1 dBm</td>
+<td class="px-4 py-2.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="settings_input_fiber">settings_input_composite</span>
+<span class="text-body-sm">OLT-CENTRAL-01</span>
+</div>
+</td>
+<td class="px-4 py-2.5 text-right"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-outline-variant/10 flex justify-between items-center text-on-surface-variant/60">
+<span class="text-[11px] font-bold">Showing 1-25 of 12,482</span>
+<div class="flex gap-4">
+<button class="text-label-caps hover:text-on-surface transition-colors">Previous</button>
+<button class="text-label-caps hover:text-on-surface transition-colors">Next</button>
+</div>
+</div>
+</div>
+<!-- Profile Sidebar (4 cols) -->
+<div class="xl:col-span-4 flex flex-col gap-gutter overflow-y-auto">
+<!-- Profile Card -->
+<div class="glass-panel rounded-xl overflow-hidden">
+<div class="h-24 bg-gradient-to-br from-primary/20 to-secondary/10 relative">
+<div class="absolute -bottom-10 left-6 p-1 bg-surface-container rounded-full">
+<img class="w-20 h-20 rounded-full object-cover" data-alt="A detailed portrait of a modern female professional with a confident look, dressed in high-end office attire. She is positioned in a blurred technology-filled corporate environment with soft ambient neon lighting. The aesthetic is clean and professional with deep black and vibrant primary blue tones throughout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzp-usohQtChjp-3NX9SigQajJvVP76C8Mq_h537S39CsZwer8WH6h_ZpwGGv2alrObL9Uweo-rnImaJvlhdE7DoGcASXlWMrCrGgQn7RKmFBh06nEjho7aMPbH605gonWJyYpA9nrfF6FeGjBVDGXo42y9Nx93qy4s1pNP5AwfC07O7KgG9BegAZUqPy1rkcLOtoURAa1OOvA-Zax3m4B4hsc5AJZVYMzSuO4tjBcQh602Q-guP61xJGLcX7r8K28RgECbDzWk_k"/>
+</div>
+</div>
+<div class="pt-12 pb-6 px-6">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md">Maria Alvarez</h3>
+<p class="font-data-mono text-body-sm text-on-surface-variant/60">wifi_alv_north_12</p>
+</div>
+<span class="px-2 py-1 rounded bg-error-container/20 text-error border border-error/30 text-[10px] font-bold uppercase tracking-widest">Priority Account</span>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4">
+<div class="p-3 rounded bg-white/5 border border-white/5">
+<p class="text-[10px] font-bold text-on-surface-variant/40 uppercase mb-1">Signal Quality</p>
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-error font-bold">-76.2 dBm</span>
+<div class="flex gap-0.5">
+<div class="w-1 h-3 bg-error rounded-sm"></div>
+<div class="w-1 h-3 bg-white/10 rounded-sm"></div>
+<div class="w-1 h-3 bg-white/10 rounded-sm"></div>
+<div class="w-1 h-3 bg-white/10 rounded-sm"></div>
+</div>
+</div>
+</div>
+<div class="p-3 rounded bg-white/5 border border-white/5">
+<p class="text-[10px] font-bold text-on-surface-variant/40 uppercase mb-1">Uptime</p>
+<span class="font-data-mono text-secondary font-bold">14d 03h 11m</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ticket History -->
+<div class="glass-panel rounded-xl flex-1 flex flex-col min-h-[300px]">
+<div class="px-6 py-4 border-b border-outline-variant/10 flex justify-between items-center">
+<span class="font-title-sm text-title-sm">Ticket History</span>
+<span class="text-label-caps text-on-surface-variant/60">3 TOTAL</span>
+</div>
+<div class="p-4 space-y-4 overflow-auto">
+<!-- Ticket 1 -->
+<div class="p-3 rounded-lg border border-outline-variant/20 bg-surface-container-high/40 hover:bg-surface-container-high/60 cursor-pointer transition-all">
+<div class="flex justify-between mb-2">
+<span class="text-[10px] font-bold text-primary px-1.5 py-0.5 bg-primary/10 rounded">#INC-98211</span>
+<span class="text-[10px] text-on-surface-variant/60">OCT 12, 2023</span>
+</div>
+<p class="font-body-md text-on-surface font-semibold truncate">Intermittent connectivity issues</p>
+<p class="text-body-sm text-on-surface-variant/80 line-clamp-2 mt-1">Subscriber reports frequent drops during high-wind conditions. Suspect antenna alignment.</p>
+<div class="mt-3 flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<img class="w-5 h-5 rounded-full object-cover grayscale" data-alt="Small thumbnail of Alex Chen, the technical engineer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUItvS931VRvCtdeCwgorMSB-BGqxAMQ8OROaUCPKsl816TSWGXW_Rqy5J9bM3FilTRmNbdq_ZOK-JUH-bsm6ztz2vzymDlta8FSCNcpNfrkiBHyjuXfwKCb8eFWePQpAOXXoelHyVIxXm1MMCThcHJT28vk5RE17SilHpVrUzwqS7TydCSpP4IEpY_i6SwoDbowwAH0okuN1xyEO9Y2SKhYY0ZTYmtA7UDnR0SrH0LoGBhjJGquZfrGaQ2RqXrzsF0tboVdnNyM4"/>
+<span class="text-[11px] text-on-surface-variant">Assigned to A. Chen</span>
+</div>
+<span class="text-[11px] font-bold text-secondary">RESOLVED</span>
+</div>
+</div>
+<!-- Ticket 2 -->
+<div class="p-3 rounded-lg border border-error/20 bg-error-container/5 hover:bg-error-container/10 cursor-pointer transition-all">
+<div class="flex justify-between mb-2">
+<span class="text-[10px] font-bold text-error px-1.5 py-0.5 bg-error/10 rounded">#INC-102934</span>
+<span class="text-[10px] text-on-surface-variant/60">YESTERDAY</span>
+</div>
+<p class="font-body-md text-on-surface font-semibold truncate">Critical signal drop below threshold</p>
+<p class="text-body-sm text-on-surface-variant/80 line-clamp-2 mt-1">Automatic alert: SNR dropped below 15dB. Packet loss detected (8%).</p>
+<div class="mt-3 flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] text-on-surface-variant/40">?</div>
+<span class="text-[11px] text-on-surface-variant">Unassigned</span>
+</div>
+<span class="text-[11px] font-bold text-error">OPEN</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-[0_8px_24px_rgba(173,198,255,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined font-bold text-[32px]" data-icon="person_add">person_add</span>
+<span class="absolute right-full mr-4 px-3 py-1.5 bg-surface-container-highest text-on-surface text-[12px] font-bold rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">NEW SUBSCRIBER</span>
+</button>
+</main>
+</div>
+<!-- Background Atmospheric Effect -->
+<div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-30">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-primary/20 blur-[150px] rounded-full animate-pulse"></div>
+<div class="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-secondary/10 blur-[150px] rounded-full" style="animation-delay: 2s;"></div>
+</div>
+<script>
+        // Simple interactivity for demonstration
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Toggle active styling
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-white/10'));
+                row.classList.add('bg-white/10');
+                
+                // Simulate loading profile data (visual feedback)
+                const profileCard = document.querySelector('.xl\\:col-span-4');
+                profileCard.style.opacity = '0.6';
+                setTimeout(() => {
+                    profileCard.style.opacity = '1';
+                }, 150);
+            });
+        });
+
+        // Pulsing alerts animation for Map (simulated for markers if they were visible)
+        setInterval(() => {
+            const warningIcons = document.querySelectorAll('[data-icon="warning"]');
+            warningIcons.forEach(icon => {
+                icon.style.opacity = icon.style.opacity === '0.4' ? '1' : '0.4';
+                icon.style.transition = 'opacity 0.8s ease-in-out';
+            });
+        }, 800);
+    </script>
+</body></html>

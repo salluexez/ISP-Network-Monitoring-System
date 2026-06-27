@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
+from app.repositories.device_repository import DeviceRepository
+from app.repositories.location_repository import LocationRepository
 from app.repositories.user_repository import UserRepository
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -14,6 +16,14 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 def get_user_repository(db: Annotated[Session, Depends(get_db)]) -> UserRepository:
     return UserRepository(db)
+
+
+def get_location_repository(db: Annotated[Session, Depends(get_db)]) -> LocationRepository:
+    return LocationRepository(db)
+
+
+def get_device_repository(db: Annotated[Session, Depends(get_db)]) -> DeviceRepository:
+    return DeviceRepository(db)
 
 
 def get_current_user(

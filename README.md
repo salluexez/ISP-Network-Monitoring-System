@@ -138,3 +138,88 @@ Phase 1 tests focus on contracts and app wiring:
 - Repository/service tests with a disposable PostgreSQL database in CI.
 - Flutter widget tests for auth state, login form validation, and route redirects.
 - Docker Compose smoke test for migration plus backend boot.
+
+## Phase 2 Scope
+
+Phase 2 adds production-ready Device Management and Location Management only.
+
+Backend additions:
+
+- `locations` table with parent-child hierarchy.
+- `devices` table with vendor/type/status enums, unique IP address, location assignment, and parent-device hierarchy.
+- Repository and service layers for both modules.
+- Authenticated REST APIs for create, update, delete, get, list, search, filtering, sorting, pagination, and device bulk import.
+- Alembic migration `202606020002_create_locations_and_devices.py`.
+
+Frontend additions:
+
+- Device list, detail, create, and edit screens.
+- Location list, detail, create, and edit screens.
+- Riverpod providers and repositories for Phase 2 API calls.
+- Search, pagination, filters, sorting, and status badges.
+
+## Phase 2 API Examples
+
+Create location:
+
+```http
+POST /api/v1/locations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "location_name": "POP Hamirpur",
+  "location_type": "POP",
+  "latitude": 31.6862,
+  "longitude": 76.5213,
+  "parent_location_id": null
+}
+```
+
+Create device:
+
+```http
+POST /api/v1/devices
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "device_name": "Core Router 01",
+  "hostname": "core-rtr-01",
+  "vendor": "MikroTik",
+  "device_type": "ROUTER",
+  "ip_address": "10.0.0.1",
+  "location_id": null,
+  "parent_device_id": null,
+  "status": "UNKNOWN",
+  "description": "Primary core router"
+}
+```
+
+List devices:
+
+```http
+GET /api/v1/devices?search=core&vendor=MikroTik&device_type=ROUTER&page=1&page_size=25
+Authorization: Bearer <token>
+```
+
+Bulk import:
+
+```http
+POST /api/v1/devices/bulk-import
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "devices": [
+    {
+      "device_name": "Tower A AP",
+      "vendor": "Ubiquiti",
+      "device_type": "ACCESS_POINT",
+      "ip_address": "10.10.1.2"
+    }
+  ]
+}
+```
+
+OpenAPI documentation is available at `/docs` when the backend is running.

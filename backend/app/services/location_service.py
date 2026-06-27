@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from fastapi import HTTPException, status
 
 from app.models.location import Location, LocationType

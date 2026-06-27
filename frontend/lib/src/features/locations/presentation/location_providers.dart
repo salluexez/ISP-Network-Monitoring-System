@@ -21,9 +21,17 @@ class LocationListQuery {
   final int pageSize;
 }
 
-final locationSearchProvider = StateProvider<String>((ref) => '');
-final locationTypeFilterProvider = StateProvider<String?>((ref) => null);
-final locationPageProvider = StateProvider<int>((ref) => 1);
+final locationSearchProvider =
+    NotifierProvider<LocationSearchController, String>(
+      LocationSearchController.new,
+    );
+final locationTypeFilterProvider =
+    NotifierProvider<LocationTypeFilterController, String?>(
+      LocationTypeFilterController.new,
+    );
+final locationPageProvider = NotifierProvider<LocationPageController, int>(
+  LocationPageController.new,
+);
 
 final locationsProvider = FutureProvider<LocationListResult>((ref) {
   final repository = ref.read(locationRepositoryProvider);
@@ -34,6 +42,30 @@ final locationsProvider = FutureProvider<LocationListResult>((ref) {
   );
 });
 
-final locationDetailProvider = FutureProvider.family<NetworkLocation, String>((ref, id) {
+final locationDetailProvider = FutureProvider.family<NetworkLocation, String>((
+  ref,
+  id,
+) {
   return ref.read(locationRepositoryProvider).get(id);
 });
+
+class LocationSearchController extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void setValue(String value) => state = value;
+}
+
+class LocationTypeFilterController extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setValue(String? value) => state = value;
+}
+
+class LocationPageController extends Notifier<int> {
+  @override
+  int build() => 1;
+
+  void setValue(int value) => state = value;
+}

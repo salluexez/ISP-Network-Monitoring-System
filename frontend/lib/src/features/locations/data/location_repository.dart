@@ -24,8 +24,10 @@ class LocationRepository {
       '/locations',
       queryParameters: {
         if (search != null && search.isNotEmpty) 'search': search,
-        if (locationType != null && locationType.isNotEmpty) 'location_type': locationType,
-        if (parentLocationId != null && parentLocationId.isNotEmpty) 'parent_location_id': parentLocationId,
+        if (locationType != null && locationType.isNotEmpty)
+          'location_type': locationType,
+        if (parentLocationId != null && parentLocationId.isNotEmpty)
+          'parent_location_id': parentLocationId,
         'page': page,
         'page_size': pageSize,
       },
@@ -39,12 +41,21 @@ class LocationRepository {
   }
 
   Future<NetworkLocation> create(Map<String, dynamic> payload) async {
-    final response = await _dio.post<Map<String, dynamic>>('/locations', data: payload);
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/locations',
+      data: payload,
+    );
     return NetworkLocation.fromJson(response.data ?? <String, dynamic>{});
   }
 
-  Future<NetworkLocation> update(String id, Map<String, dynamic> payload) async {
-    final response = await _dio.put<Map<String, dynamic>>('/locations/$id', data: payload);
+  Future<NetworkLocation> update(
+    String id,
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _dio.put<Map<String, dynamic>>(
+      '/locations/$id',
+      data: payload,
+    );
     return NetworkLocation.fromJson(response.data ?? <String, dynamic>{});
   }
 

@@ -8,16 +8,23 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 revision: str = "202606020002"
 down_revision: Union[str, None] = "202606020001"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-location_type = sa.Enum("CORE", "POP", "TOWER", "VILLAGE", "OLT_ROOM", name="locationtype")
-device_vendor = sa.Enum("MikroTik", "Ubiquiti", "Huawei", "VSOL", "BDCOM", "Cisco", "Generic", name="devicevendor")
-device_type = sa.Enum("ROUTER", "SWITCH", "OLT", "ONU", "TOWER", "ACCESS_POINT", "SERVER", name="devicetype")
-device_status = sa.Enum("ONLINE", "OFFLINE", "UNKNOWN", name="devicestatus")
+location_type = postgresql.ENUM(
+    "CORE", "POP", "TOWER", "VILLAGE", "OLT_ROOM", name="locationtype", create_type=False
+)
+device_vendor = postgresql.ENUM(
+    "MikroTik", "Ubiquiti", "Huawei", "VSOL", "BDCOM", "Cisco", "Generic", name="devicevendor", create_type=False
+)
+device_type = postgresql.ENUM(
+    "ROUTER", "SWITCH", "OLT", "ONU", "TOWER", "ACCESS_POINT", "SERVER", name="devicetype", create_type=False
+)
+device_status = postgresql.ENUM("ONLINE", "OFFLINE", "UNKNOWN", name="devicestatus", create_type=False)
 
 
 def upgrade() -> None:

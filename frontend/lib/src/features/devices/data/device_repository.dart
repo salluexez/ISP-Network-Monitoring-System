@@ -28,8 +28,10 @@ class DeviceRepository {
       queryParameters: {
         if (search != null && search.isNotEmpty) 'search': search,
         if (vendor != null && vendor.isNotEmpty) 'vendor': vendor,
-        if (deviceType != null && deviceType.isNotEmpty) 'device_type': deviceType,
-        if (locationId != null && locationId.isNotEmpty) 'location_id': locationId,
+        if (deviceType != null && deviceType.isNotEmpty)
+          'device_type': deviceType,
+        if (locationId != null && locationId.isNotEmpty)
+          'location_id': locationId,
         'page': page,
         'page_size': pageSize,
         'sort_by': sortBy,
@@ -45,12 +47,18 @@ class DeviceRepository {
   }
 
   Future<Device> create(Map<String, dynamic> payload) async {
-    final response = await _dio.post<Map<String, dynamic>>('/devices', data: payload);
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/devices',
+      data: payload,
+    );
     return Device.fromJson(response.data ?? <String, dynamic>{});
   }
 
   Future<Device> update(String id, Map<String, dynamic> payload) async {
-    final response = await _dio.put<Map<String, dynamic>>('/devices/$id', data: payload);
+    final response = await _dio.put<Map<String, dynamic>>(
+      '/devices/$id',
+      data: payload,
+    );
     return Device.fromJson(response.data ?? <String, dynamic>{});
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/responsive_page.dart';
 import '../../auth/presentation/auth_controller.dart';
@@ -47,6 +48,23 @@ class DashboardScreen extends ConsumerWidget {
                 _FoundationCard(title: 'Database', value: 'PostgreSQL'),
                 _FoundationCard(title: 'Routing', value: 'Go Router'),
                 _FoundationCard(title: 'State', value: 'Riverpod'),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                FilledButton.icon(
+                  onPressed: () => context.go('/devices'),
+                  icon: const Icon(Icons.router_outlined),
+                  label: const Text('Manage Devices'),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: () => context.go('/locations'),
+                  icon: const Icon(Icons.location_on_outlined),
+                  label: const Text('Manage Locations'),
+                ),
               ],
             ),
           ],

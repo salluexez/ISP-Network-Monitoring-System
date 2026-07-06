@@ -21,7 +21,11 @@ class Location(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     location_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    location_type: Mapped[LocationType] = mapped_column(Enum(LocationType), nullable=False, index=True)
+    location_type: Mapped[LocationType] = mapped_column(
+        Enum(LocationType, values_callable=lambda values: [item.value for item in values]),
+        nullable=False,
+        index=True,
+    )
     latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     parent_location_id: Mapped[str | None] = mapped_column(

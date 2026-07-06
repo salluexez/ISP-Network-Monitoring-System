@@ -40,8 +40,16 @@ class Device(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     device_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     hostname: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
-    vendor: Mapped[DeviceVendor] = mapped_column(Enum(DeviceVendor), nullable=False, index=True)
-    device_type: Mapped[DeviceType] = mapped_column(Enum(DeviceType), nullable=False, index=True)
+    vendor: Mapped[DeviceVendor] = mapped_column(
+        Enum(DeviceVendor, values_callable=lambda values: [item.value for item in values]),
+        nullable=False,
+        index=True,
+    )
+    device_type: Mapped[DeviceType] = mapped_column(
+        Enum(DeviceType, values_callable=lambda values: [item.value for item in values]),
+        nullable=False,
+        index=True,
+    )
     ip_address: Mapped[str] = mapped_column(String(45), nullable=False, unique=True, index=True)
     location_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("locations.id", ondelete="SET NULL"), nullable=True, index=True
@@ -49,7 +57,11 @@ class Device(Base):
     parent_device_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("devices.id", ondelete="SET NULL"), nullable=True, index=True
     )
-    status: Mapped[DeviceStatus] = mapped_column(Enum(DeviceStatus), nullable=False, default=DeviceStatus.UNKNOWN)
+    status: Mapped[DeviceStatus] = mapped_column(
+        Enum(DeviceStatus, values_callable=lambda values: [item.value for item in values]),
+        nullable=False,
+        default=DeviceStatus.UNKNOWN,
+    )
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
